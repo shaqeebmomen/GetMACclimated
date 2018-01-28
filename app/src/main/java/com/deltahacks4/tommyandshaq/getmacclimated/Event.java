@@ -4,9 +4,11 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.android.gms.maps.model.LatLng;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * Created by shaqe on 28/01/2018.
@@ -23,7 +25,9 @@ public class Event {
     public Float lat;
     public Float lng;
 
+
     public Event(String name, String date, String timeSlot, String description, String location, String tag, String extendedInfo, Float lat, Float lng){
+
         this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
@@ -35,6 +39,10 @@ public class Event {
         this.lng = lng;
     }
     public String getName() { return name; }
+
+    public String getName(){
+        return name;
+    }
 
     public String getDate(){
         return date;
