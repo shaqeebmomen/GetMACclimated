@@ -1,6 +1,13 @@
 package com.deltahacks4.tommyandshaq.getmacclimated;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.google.android.gms.maps.model.LatLng;
+
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -15,10 +22,12 @@ public class Event {
     public String location;
     public String tag;
     public String extendedInfo;
-    public String lat;
-    public String lng;
+    public Float lat;
+    public Float lng;
 
-    public Event(String date, String timeSlot, String description, String location, String tag, String extendedInfo, String lat, String lng){
+
+    public Event(String name, String date, String timeSlot, String description, String location, String tag, String extendedInfo, Float lat, Float lng){
+
         this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
@@ -29,6 +38,7 @@ public class Event {
         this.lat = lat;
         this.lng = lng;
     }
+    public String getName() { return name; }
 
     public String getName(){
         return name;
@@ -58,11 +68,11 @@ public class Event {
         return extendedInfo;
     }
 
-    public String getLat() {
+    public Float getLat() {
         return lat;
     }
 
-    public String getLng() {
+    public Float getLng() {
         return lng;
     }
 
