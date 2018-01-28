@@ -168,10 +168,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateMap(Location location) {
+
         currentLocation = new Location(location);
         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-        mMap.clear();
-        mMap.addCircle(new CircleOptions().center(currentLatLng).radius(2).visible(true).fillColor(0xff0000ff).strokeColor(0));
+        CircleOptions localCirc = new CircleOptions().center(currentLatLng).radius(2).visible(true).fillColor(0xff0000ff).strokeColor(0);
+        mMap.addCircle(localCirc);
 
 
     }
