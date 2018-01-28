@@ -10,8 +10,11 @@ import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +30,7 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    Button bt
     private GoogleMap mMap;
     // Power Manager
     public PowerManager.WakeLock wl;
@@ -50,6 +54,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+        bt = (Button) findViewById(R.id.button);
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(EventMaker.this, )
+            }
+        });
     }
 
     protected void onStart() {
