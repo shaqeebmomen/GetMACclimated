@@ -2,6 +2,7 @@ package com.deltahacks4.tommyandshaq.getmacclimated;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,13 +31,17 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    Button bt
     private GoogleMap mMap;
     // Power Manager
     public PowerManager.WakeLock wl;
     public Location currentLocation;
 
     public int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+    public int MY_PERMISSIONS_REQUEST_WAKE_LOCK;
+
+    public String locationProvider;
+    public LocationListener locationListener;
+    public LocationManager locationManager;
 
 
     private static final String TAG = MapsActivity.class.getSimpleName();
@@ -47,22 +52,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         checkPermissions();
-        setWakeLock();
         startLocationUpdates();
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
-        bt = (Button) findViewById(R.id.button);
-        bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(EventMaker.this, )
-            }
-        });
+
+
+
+
     }
+
+    public void openMaker(View view) {
+        Intent myIntent = new Intent(this,EventMaker.class);
+        startActivity(myIntent);
+    }
+
 
     protected void onStart() {
         super.onStart();
@@ -70,6 +79,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             wl.release();
         }
     }
+
+    protected  void onStop(){
+        super.onStop();
+
+    }
+
+    protected void onPause(){
+        super.onPause();
+        setWakeLock();
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -83,8 +103,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Add a marker in Sydney and move the camera
-
     }
 
 
@@ -92,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<LatLng> locations = new ArrayList<>(events.length);
         for (int i = 0; i < events.length - 1; i++) {
             locations.add(events[i].getLatLng());
+            mMap.addMarker(new MarkerOptions().position(events[i].getLatLng()).title(events[i].getName()).snippet(events[i].getLocation()));
         }
     }
 
@@ -101,44 +120,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         wl.acquire();
     }
 
-    private void startLocationUpdates() {
+    public void startLocationUpdates() {
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
 // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                updateMap(location);
+                locationProvider = LocationManager.GPS_PROVIDER;
+
+
+                updateMap(locationManager.getLastKnownLocation(locationProvider));
             }
+
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
 
             public void onProviderEnabled(String provider) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(18));
             }
 
             public void onProviderDisabled(String provider) {
+
             }
         };
 
 // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, locationListener);
     }
 
     public void updateMap(Location location) {
         currentLocation = new Location(location);
         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-        mMap.addCircle(new CircleOptions().center(currentLatLng));
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").snippet("TEST SNIPPSS"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
+        mMap.clear();
+        mMap.addCircle(new CircleOptions().center(currentLatLng).radius(1).visible(true).fillColor(0xff0000ff).strokeColor(0));
+
 
     }
+
 
     public boolean checkPermissions() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WAKE_LOCK},
+                MY_PERMISSIONS_REQUEST_WAKE_LOCK);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true;

@@ -2,13 +2,13 @@ package com.deltahacks4.tommyandshaq.getmacclimated;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.Date;
 
 /**
  * Created by shaqe on 28/01/2018.
  */
 
 public class Event {
+    public String name;
     public String date;
     public String timeSlot;
     public String description;
@@ -19,6 +19,7 @@ public class Event {
     public String lng;
 
     public Event(String date, String timeSlot, String description, String location, String tag, String extendedInfo, String lat, String lng){
+        this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
         this.description = description;
@@ -27,6 +28,10 @@ public class Event {
         this.extendedInfo = extendedInfo;
         this.lat = lat;
         this.lng = lng;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public String getDate(){
@@ -65,3 +70,5 @@ public class Event {
         return new LatLng(Double.parseDouble(this.getLat()),Double.parseDouble(this.getLng()));
     }
 }
+
+
