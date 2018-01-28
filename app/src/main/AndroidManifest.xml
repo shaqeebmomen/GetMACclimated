@@ -39,9 +39,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Event" >
+            android:exported="true">
+        </activity>
+
         <activity android:name=".EventMaker" >
             android:exported="true">
-            android:parentActivityName=".MainActivity">
         </activity>
 
     </application>
