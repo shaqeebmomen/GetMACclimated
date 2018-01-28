@@ -21,6 +21,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,6 +45,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public LocationListener locationListener;
     public LocationManager locationManager;
 
+    public EventMaker eventMaker = new EventMaker();
+    public MarkerOptions eventMark;
+
+    public List<Event> eventList;
+    public  List<LatLng> locations = new ArrayList<>();
+
+
 
     private static final String TAG = MapsActivity.class.getSimpleName();
 
@@ -50,20 +59,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        eventList = eventMaker.makeEvents();
 
         checkPermissions();
         startLocationUpdates();
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
-
-
-
 
     }
 
@@ -88,6 +92,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onPause(){
         super.onPause();
         setWakeLock();
+
+    }
+    protected void onResume(){
+        super.onResume();
+
     }
 
 
@@ -103,14 +112,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+
     }
 
 
-    public void setLocations(Event[] events) {
-        List<LatLng> locations = new ArrayList<>(events.length);
-        for (int i = 0; i < events.length - 1; i++) {
-            locations.add(events[i].getLatLng());
-            mMap.addMarker(new MarkerOptions().position(events[i].getLatLng()).title(events[i].getName()).snippet(events[i].getLocation()));
+    public void setLocations(List<Event> events) {
+        for (Event event: events) {
+            String infoString = event.getLocation() + "\n" + event.getTimeSlot();
+            locations.add(event.getLatLng());
+            eventMark = new MarkerOptions().position(event.getLatLng()).icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(event.getName()).snippet(infoString);
+            mMap.addMarker(eventMark);
         }
     }
 
@@ -132,6 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 updateMap(locationManager.getLastKnownLocation(locationProvider));
+                setLocations(eventList);
             }
 
 
@@ -139,8 +153,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             public void onProviderEnabled(String provider) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())));
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(18));
+
+
+
             }
 
             public void onProviderDisabled(String provider) {
@@ -156,7 +171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         currentLocation = new Location(location);
         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
         mMap.clear();
-        mMap.addCircle(new CircleOptions().center(currentLatLng).radius(1).visible(true).fillColor(0xff0000ff).strokeColor(0));
+        mMap.addCircle(new CircleOptions().center(currentLatLng).radius(2).visible(true).fillColor(0xff0000ff).strokeColor(0));
 
 
     }
@@ -177,5 +192,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return false;
         }
 
+    }
+
+    public void resetView(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(18));
     }
 }
